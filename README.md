@@ -35,3 +35,62 @@ Agendar una cita para renovar tu pasaporte depende de un proceso que para el ciu
 - Se cuenta con una clase abstracta que representa el comando con el método ejecutar(). La clase AgendarCitaCommand hereda de ella, inicializa su el builder y observadores, y realiza el comando de contruir la cita y notificar al observador.
 
 - El Facade SistemaCitasFacade registra al observador, utiliza el builder de CitaBuilder para construir la cita y ejecuta el comando para programarla.
+
+---
+## Diagrama UML.
+
+classDiagram
+    class Cita {
+        - curp: str
+        - correo: str
+        - lugar: str
+        - fecha: date
+        - folio: str
+        + mostrar(): str
+    }
+
+    class CitaBuilder {
+        - curp: str
+        - correo: str
+        - lugar: str
+        - fecha: date
+        + set_curp(curp): CitaBuilder
+        + set_correo(correo): CitaBuilder
+        + set_lugar(lugar): CitaBuilder
+        + set_fecha(fecha): CitaBuilder
+        + build(): Cita
+    }
+
+    class Observador {
+        <<interface>>
+        + actualizar(cita): void
+    }
+
+    class ServicioCorreo {
+        + actualizar(cita): void
+    }
+
+    class ComandoCita {
+        <<interface>>
+        + ejecutar(): void
+    }
+
+    class AgendarCitaCommand {
+        - builder: CitaBuilder
+        - observadores: list
+        + ejecutar(): void
+    }
+
+    class SistemaCitasFacade {
+        - observadores: list
+        + registrar_observador(obs): void
+        + solicitar_cita(...): void
+    }
+
+    Observador <|.. ServicioCorreo
+    ComandoCita <|.. AgendarCitaCommand
+    CitaBuilder --> Cita
+    AgendarCitaCommand --> CitaBuilder
+    AgendarCitaCommand --> Observador
+    SistemaCitasFacade --> AgendarCitaCommand
+    SistemaCitasFacade --> Observador
